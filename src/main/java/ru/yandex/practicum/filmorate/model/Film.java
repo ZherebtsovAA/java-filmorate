@@ -7,8 +7,6 @@ import lombok.Value;
 import java.time.LocalDate;
 
 @Value
-@Builder
-@NonNull
 public class Film {
     int id;
     String name;
