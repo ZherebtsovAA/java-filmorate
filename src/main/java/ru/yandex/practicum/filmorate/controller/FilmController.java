@@ -56,7 +56,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film,  HttpServletRequest request) {
+    public Film update(@RequestBody Film film, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Фильм: '{}'"
                 , request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
         films.put(film.getName(), film);
@@ -69,7 +69,7 @@ public class FilmController {
     }
 
     private void checkValidatorRules(final List<FilmValidator> validators, final Film film) throws ValidateException {
-        for (FilmValidator validator: validators) {
+        for (FilmValidator validator : validators) {
             validator.validate(film);
         }
     }

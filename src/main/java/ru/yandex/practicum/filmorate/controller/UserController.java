@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.*;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validators.*;
 
@@ -72,7 +71,7 @@ public class UserController {
     }
 
     private void checkValidatorRules(final List<UserValidator> validators, final User user) throws ValidateException {
-        for (UserValidator validator: validators) {
+        for (UserValidator validator : validators) {
             validator.validate(user);
         }
     }
