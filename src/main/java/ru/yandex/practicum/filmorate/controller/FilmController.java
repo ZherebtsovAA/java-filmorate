@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.validators.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film add(@RequestBody Film film, HttpServletRequest request, HttpServletResponse response) {
+    public Film add(@Valid @RequestBody Film film, HttpServletRequest request, HttpServletResponse response) {
         try {
             log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Фильм: '{}'"
                     , request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
@@ -60,7 +61,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film, HttpServletRequest request, HttpServletResponse response) {
+    public Film update(@Valid @RequestBody Film film, HttpServletRequest request, HttpServletResponse response) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Фильм: '{}'"
                 , request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
         if (films.containsKey(film.getId())) {

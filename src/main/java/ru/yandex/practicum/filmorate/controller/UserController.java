@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -9,6 +8,7 @@ import ru.yandex.practicum.filmorate.validators.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User add(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    public User add(@Valid @RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
         try {
             log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Пользователь: '{}'"
                     , request.getMethod(), request.getRequestURI(), request.getQueryString(), user);
@@ -75,7 +75,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    public User update(@Valid @RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
         log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Пользователь: '{}'"
                 , request.getMethod(), request.getRequestURI(), request.getQueryString(), user);
         if (users.containsKey(user.getId())) {
