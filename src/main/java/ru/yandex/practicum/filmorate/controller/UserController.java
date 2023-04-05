@@ -38,12 +38,12 @@ public class UserController {
             users.put(id++, user);
             return user;
         } catch (ValidateUserEmailException exception) {
-            response.setStatus(400);
             log.warn("Ошибка валидации почты: '{}'", exception.getMessage());
+            response.setStatus(400);
             return user;
         } catch (ValidateUserLoginException exception) {
-            response.setStatus(400);
             log.warn("Ошибка валидации логина: '{}'", exception.getMessage());
+            response.setStatus(400);
             return user;
         } catch (ValidateUserNameException exception) {
             log.warn("Ошибка валидации имени пользователя: '{}'", exception.getMessage());
@@ -55,21 +55,21 @@ public class UserController {
                 users.put(id++, user);
                 return user;
             } catch (ValidateUserBirthdayException e) {
-                response.setStatus(400);
                 log.warn("Ошибка валидации дня рождения: '{}'", e.getMessage());
+                response.setStatus(400);
                 return user;
             } catch (ValidateException e) {
-                response.setStatus(400);
                 log.warn("Ошибка валидации: '{}'", e.getMessage());
+                response.setStatus(400);
                 return user;
             }
         } catch (ValidateUserBirthdayException exception) {
-            response.setStatus(400);
             log.warn("Ошибка валидации дня рождения: '{}'", exception.getMessage());
+            response.setStatus(400);
             return user;
         } catch (ValidateException exception) {
-            response.setStatus(400);
             log.warn("Ошибка валидации: '{}'", exception.getMessage());
+            response.setStatus(400);
             return user;
         }
     }
