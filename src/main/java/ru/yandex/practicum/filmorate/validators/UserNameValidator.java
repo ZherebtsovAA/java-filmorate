@@ -7,7 +7,8 @@ import ru.yandex.practicum.filmorate.model.User;
 public class UserNameValidator implements UserValidator {
     @Override
     public void validate(User user) throws ValidateException {
-        if (user.getName().isBlank()) {
+        String name = user.getName();
+        if (name == null || name.isBlank()) {
             throw new ValidateUserNameException("Имя не указано, будет использован логин");
         }
     }

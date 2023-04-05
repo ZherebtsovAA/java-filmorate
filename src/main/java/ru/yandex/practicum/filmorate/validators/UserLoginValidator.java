@@ -8,7 +8,7 @@ public class UserLoginValidator implements UserValidator {
     @Override
     public void validate(User user) throws ValidateException {
         String login = user.getLogin().trim();
-        if (login.isBlank() || !login.contains(" ")) {
+        if (login.isBlank() || login.contains(" ")) {
             throw new ValidateUserLoginException("Логин не может быть пустым и содержать пробелы");
         }
     }

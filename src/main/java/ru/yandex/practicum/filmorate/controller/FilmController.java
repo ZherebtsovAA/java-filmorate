@@ -34,23 +34,18 @@ public class FilmController {
             return film;
         } catch (ValidateFilmNameException exception) {
             log.warn("Ошибка валидации имени: '{}'", exception.getMessage());
-            System.out.println("Ошибка валидации имени: " + exception.getMessage());
             return film;
         } catch (ValidateFilmDescriptionException exception) {
             log.warn("Ошибка валидации описания: '{}'", exception.getMessage());
-            System.out.println("Ошибка валидации описания: " + exception.getMessage());
             return film;
         } catch (ValidateFilmReleaseDateException exception) {
             log.warn("Ошибка валидации даты релиза: '{}'", exception.getMessage());
-            System.out.println("Ошибка валидации даты релиза: " + exception.getMessage());
             return film;
         } catch (ValidateFilmDurationException exception) {
             log.warn("Ошибка валидации продолжительности фильма: '{}'", exception.getMessage());
-            System.out.println("Ошибка валидации продолжительности фильма: " + exception.getMessage());
             return film;
         } catch (ValidateException exception) {
             log.warn("Ошибка валидации: '{}'", exception.getMessage());
-            System.out.println("Ошибка валидации: " + exception.getMessage());
             return film;
         }
     }
