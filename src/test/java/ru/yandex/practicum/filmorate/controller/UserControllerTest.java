@@ -53,8 +53,8 @@ class UserControllerTest {
 
     @Test
     public void userUpdate() throws Exception {
-        User userUpdate = new User("mail@yandex.ru", "doloreUpdate"
-                , LocalDate.of(1976, 9, 20));
+        User userUpdate = new User("mail@yandex.ru", "doloreUpdate",
+                LocalDate.of(1976, 9, 20));
         userUpdate.setId(1);
         userUpdate.setName("est adipisicing");
         mockMvc.perform(
@@ -67,8 +67,8 @@ class UserControllerTest {
 
     @Test
     public void userUpdateUnknown() throws Exception {
-        User userUpdate = new User("mail@yandex.ru", "doloreUpdate"
-                , LocalDate.of(1976, 9, 20));
+        User userUpdate = new User("mail@yandex.ru", "doloreUpdate",
+                LocalDate.of(1976, 9, 20));
         userUpdate.setId(9999);
         userUpdate.setName("est adipisicing");
         mockMvc.perform(
