@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User add(@Valid @RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    public User add(@Valid @RequestBody User user, HttpServletRequest request) {
         try {
             log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Пользователь: '{}'"
                     , request.getMethod(), request.getRequestURI(), request.getQueryString(), user);
@@ -39,11 +39,9 @@ public class UserController {
             return user;
         } catch (ValidateUserEmailException exception) {
             log.warn("Ошибка валидации почты: '{}'", exception.getMessage());
-            response.setStatus(400);
             return user;
         } catch (ValidateUserLoginException exception) {
             log.warn("Ошибка валидации логина: '{}'", exception.getMessage());
-            response.setStatus(400);
             return user;
         } catch (ValidateUserNameException exception) {
             log.warn("Ошибка валидации имени пользователя: '{}'", exception.getMessage());
@@ -56,20 +54,16 @@ public class UserController {
                 return user;
             } catch (ValidateUserBirthdayException e) {
                 log.warn("Ошибка валидации дня рождения: '{}'", e.getMessage());
-                response.setStatus(400);
                 return user;
             } catch (ValidateException e) {
                 log.warn("Ошибка валидации: '{}'", e.getMessage());
-                response.setStatus(400);
                 return user;
             }
         } catch (ValidateUserBirthdayException exception) {
             log.warn("Ошибка валидации дня рождения: '{}'", exception.getMessage());
-            response.setStatus(400);
             return user;
         } catch (ValidateException exception) {
             log.warn("Ошибка валидации: '{}'", exception.getMessage());
-            response.setStatus(400);
             return user;
         }
     }
@@ -80,9 +74,10 @@ public class UserController {
                 , request.getMethod(), request.getRequestURI(), request.getQueryString(), user);
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
-            return user;
+        } else {
+            log.warn("Пользователя с ID: '" + user.getId() + "' нет в списке пользователей");
+            response.setStatus(404);
         }
-        response.setStatus(404);
         return user;
     }
 

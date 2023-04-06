@@ -34,16 +34,14 @@ public class FilmController {
             log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Фильм: '{}'"
                     , request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
             checkValidatorRules(filmValidators, film);
-            final Film newFilm = film.toBuilder().id(id).build();
-            films.put(id++, newFilm);
-            return newFilm;
+            film.setId(id);
+            films.put(id++, film);
+            return film;
         } catch (ValidateFilmNameException exception) {
             log.warn("Ошибка валидации имени: '{}'", exception.getMessage());
-            response.setStatus(400);
             return film;
         } catch (ValidateFilmDescriptionException exception) {
             log.warn("Ошибка валидации описания: '{}'", exception.getMessage());
-            response.setStatus(400);
             return film;
         } catch (ValidateFilmReleaseDateException exception) {
             log.warn("Ошибка валидации даты релиза: '{}'", exception.getMessage());
@@ -51,11 +49,9 @@ public class FilmController {
             return film;
         } catch (ValidateFilmDurationException exception) {
             log.warn("Ошибка валидации продолжительности фильма: '{}'", exception.getMessage());
-            response.setStatus(400);
             return film;
         } catch (ValidateException exception) {
             log.warn("Ошибка валидации: '{}'", exception.getMessage());
-            response.setStatus(400);
             return film;
         }
     }
@@ -66,9 +62,10 @@ public class FilmController {
                 , request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
-            return film;
+        } else {
+            log.warn("Фильма с ID: '" + film.getId() + "' нет в списке фильмов");
+            response.setStatus(404);
         }
-        response.setStatus(404);
         return film;
     }
 
