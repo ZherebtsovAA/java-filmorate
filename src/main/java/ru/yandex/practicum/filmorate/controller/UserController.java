@@ -20,8 +20,8 @@ import java.util.Map;
 public class UserController {
     private final Map<Integer, User> users; //Key - id, Value - User
     private int id;
-    private final List<UserValidator> userValidators = List.of(new UserEmailValidator(), new UserLoginValidator()
-            , new UserNameValidator(), new UserBirthdayValidator());
+    private final List<UserValidator> userValidators = List.of(new UserEmailValidator(), new UserLoginValidator(),
+            new UserNameValidator(), new UserBirthdayValidator());
 
     public UserController() {
         users = new HashMap<>();
@@ -31,8 +31,8 @@ public class UserController {
     @PostMapping
     public User add(@Valid @RequestBody User user, HttpServletRequest request) {
         try {
-            log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Пользователь: '{}'"
-                    , request.getMethod(), request.getRequestURI(), request.getQueryString(), user);
+            log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Пользователь: '{}'",
+                    request.getMethod(), request.getRequestURI(), request.getQueryString(), user);
             checkValidatorRules(userValidators, user);
             user.setId(id);
             users.put(id++, user);
@@ -70,8 +70,8 @@ public class UserController {
 
     @PutMapping
     public User update(@Valid @RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
-        log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Пользователь: '{}'"
-                , request.getMethod(), request.getRequestURI(), request.getQueryString(), user);
+        log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Пользователь: '{}'",
+                request.getMethod(), request.getRequestURI(), request.getQueryString(), user);
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
         } else {
