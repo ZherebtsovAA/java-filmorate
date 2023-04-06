@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -13,7 +11,7 @@ public class Film {
     @NotBlank
     private final String name;
     @NotBlank
-    @Size(max=200)
+    @Size(max = 200)
     private final String description;
     @Past
     @NotNull
