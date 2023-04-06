@@ -20,8 +20,7 @@ import java.util.Map;
 public class FilmController {
     private final Map<Integer, Film> films; // Key - id, Value - Film
     private int id;
-    private final List<FilmValidator> filmValidators = List.of(new FilmNameValidator(), new FilmDescriptionValidator()
-            , new FilmReleaseDateValidator(), new FilmDurationValidator());
+    private final List<FilmValidator> filmValidators = List.of(new FilmNameValidator(), new FilmDescriptionValidator(), new FilmReleaseDateValidator(), new FilmDurationValidator());
 
     public FilmController() {
         films = new HashMap<>();
@@ -31,8 +30,7 @@ public class FilmController {
     @PostMapping
     public Film add(@Valid @RequestBody Film film, HttpServletRequest request, HttpServletResponse response) {
         try {
-            log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Фильм: '{}'"
-                    , request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
+            log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Фильм: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
             checkValidatorRules(filmValidators, film);
             film.setId(id);
             films.put(id++, film);
@@ -58,8 +56,7 @@ public class FilmController {
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film, HttpServletRequest request, HttpServletResponse response) {
-        log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Фильм: '{}'"
-                , request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
+        log.info("Получен запрос к эндпоинту: '{} {}', Строка параметров запроса: '{}', Фильм: '{}'", request.getMethod(), request.getRequestURI(), request.getQueryString(), film);
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
         } else {
