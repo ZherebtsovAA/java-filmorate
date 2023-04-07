@@ -1,20 +1,24 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validators.ValidReleaseDate;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
 public class Film {
-    private int id;
+    private Integer id;
     @NotBlank
     private final String name;
     @NotBlank
     @Size(max = 200)
     private final String description;
-    @Past
     @NotNull
+    @ValidReleaseDate
     private final LocalDate releaseDate;
     @PositiveOrZero
     private final int duration;
