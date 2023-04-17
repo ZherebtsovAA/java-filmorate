@@ -25,6 +25,7 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
+.mvn
 *.iws
 *.iml
 *.ipr
@@ -44,3 +45,5 @@ build/
 
 *.db
 db/*
+/mvnw
+/mvnw.cmd
