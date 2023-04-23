@@ -1,30 +1,24 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
-    private static Integer globalFilmId = 1;
     private final FilmStorage filmStorage;
-
-    public FilmService(FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
-
-    private final Comparator<HashSet<Integer>> comparator = (countLike1, countLike2) -> countLike2.size() - countLike1.size();
-
-    private static Integer getNextId() {
-        return globalFilmId++;
-    }
+    private final UserService userService;
 
     public Film save(Film film) {
-        film.setId(getNextId());
         return filmStorage.save(film);
     }
 
@@ -36,33 +30,33 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
-    public Film findFilmById(Integer filmId) {
-        List<Film> result = filmStorage.findFilmById(new ArrayList<>(Collections.singletonList(filmId)));
+    public Film findFilmById(Integer filmId) throws NotFoundException {
+        Optional<Film> result = filmStorage.findFilmById(filmId);
         if (result.isEmpty()) {
             throw new NotFoundException("фильма с ID: " + filmId + " нет в списке фильмов");
         }
-        return result.get(0);
+        return result.get();
     }
 
     public void addLike(Integer filmId, Integer userId) {
-        filmStorage.addLike(filmId, userId);
+        Film film = findFilmById(filmId);
+        userService.findUserById(userId);
+        film.getRating().add(userId);
     }
 
     public void deleteLike(Integer filmId, Integer userId) {
-        if (userId <= 0) {
-            throw new NotFoundException("передано отрицательное значение userId: " + userId);
-        }
-        filmStorage.deleteLike(filmId, userId);
+        Film film = findFilmById(filmId);
+        userService.findUserById(userId);
+        film.getRating().remove(userId);
     }
 
     public List<Film> findPopularFilms(Integer count) {
-        List<Integer> filmId = filmStorage.getRatingFilms().entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(comparator))
+        if (count < 0) {
+            return Collections.emptyList();
+        }
+        return filmStorage.findAll().stream()
+                .sorted(Comparator.comparingInt(film -> (-1) * film.getRating().size()))
                 .limit(count)
-                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-
-        return filmStorage.findFilmById(filmId);
     }
-
 }

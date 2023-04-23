@@ -1,36 +1,19 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class UserService {
-    private static Integer globalUserId = 1;
     private final UserStorage userStorage;
 
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
-
-    private static Integer getNextId() {
-        return globalUserId++;
-    }
-
     public User save(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-            log.info("имя не указано, будет использован логин");
-        }
-        user.setId(getNextId());
         return userStorage.save(user);
     }
 
@@ -42,41 +25,54 @@ public class UserService {
         return userStorage.findAll();
     }
 
-    public User findUserById(Integer userId) {
-        List<User> result = userStorage.findUserById(new ArrayList<>(Collections.singletonList(userId)));
+    public User findUserById(Integer userId) throws NotFoundException {
+        Optional<User> result = userStorage.findUserById(userId);
         if (result.isEmpty()) {
             throw new NotFoundException("пользователя с ID: " + userId + " нет в списке пользователей");
         }
-        return result.get(0);
+        return result.get();
     }
 
     public void addToFriends(Integer userId, Integer friendId) {
-        List<User> friend = userStorage.findUserById(new ArrayList<>(Collections.singletonList(friendId)));
-        if (friend.isEmpty()) {
-            throw new NotFoundException("пользователь с friendId = " + friendId + " отсутствует в списке пользователей");
+        if (userId.equals(friendId)) {
+            return;
         }
-        userStorage.addToFriends(userId, friendId);
+        User user = findUserById(userId);
+        User friend = findUserById(friendId);
+        // добавим userId и friendId в друзья друг другу
+        user.setFriends(friendId);
+        friend.setFriends(userId);
     }
 
     public void deleteToFriends(Integer userId, Integer friendId) {
-        List<User> friend = userStorage.findUserById(new ArrayList<>(Collections.singletonList(friendId)));
-        if (friend.isEmpty()) {
-            throw new NotFoundException("пользователь с friendId = " + friendId + " отсутствует в списке пользователей");
+        if (userId.equals(friendId)) {
+            return;
         }
-        userStorage.deleteToFriends(userId, friendId);
+        User user = findUserById(userId);
+        User friend = findUserById(friendId);
+        // удалим userId и friendId из друзьей друг друга
+        user.getFriends().remove(friendId);
+        friend.getFriends().remove(userId);
     }
 
     public List<User> findUserFriends(Integer userId) {
-        return userStorage.findUserById(new ArrayList<>(userStorage.getIdUserFriends(userId)));
+        Set<Integer> friendsId = findUserById(userId).getFriends();
+        List<User> friends = new ArrayList<>();
+        for (Integer id : friendsId) {
+            friends.add(findUserById(id));
+        }
+        return friends;
     }
 
     public List<User> findCommonFriends(Integer userId, Integer otherId) {
-        HashSet<Integer> commonFriendsId = new HashSet<>();
-        commonFriendsId.addAll(userStorage.getIdUserFriends(userId));
-        commonFriendsId.addAll(userStorage.getIdUserFriends(otherId));
-        commonFriendsId.remove(userId);
-        commonFriendsId.remove(otherId);
-        return userStorage.findUserById(new ArrayList<>(commonFriendsId));
-    }
+        Set<Integer> commonFriendsId = new HashSet<>(findUserById(userId).getFriends());
+        commonFriendsId.retainAll(findUserById(otherId).getFriends());
 
+        List<User> commonFriends = new ArrayList<>(commonFriendsId.size());
+        for (Integer id : commonFriendsId) {
+            commonFriends.add(findUserById(id));
+        }
+
+        return commonFriends;
+    }
 }
