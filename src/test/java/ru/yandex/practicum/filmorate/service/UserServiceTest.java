@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
@@ -15,9 +12,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceTest {
-    private UserService userService = new UserService(new InMemoryUserStorage());
+    private final UserService userService = new UserService(new InMemoryUserStorage());
 
     @Test
     void findUserById() {
@@ -101,7 +97,6 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(1)
     void findCommonFriends() {
         List<User> users = new ArrayList<>(List.of(
                 new User("email1@ya.ru", "login1", LocalDate.of(1984, 10, 10)),

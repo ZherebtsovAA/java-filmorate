@@ -11,9 +11,9 @@ import java.util.*;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>(); // Key - film ID, Value - Film
-    private static Integer globalFilmId = 1;
+    private Integer globalFilmId = 1;
 
-    private static Integer getNextId() {
+    private Integer getNextId() {
         return globalFilmId++;
     }
 

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,10 +13,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FilmServiceTest {
-    private final UserService userService = new UserService(new InMemoryUserStorage());
-    private final FilmService filmService = new FilmService(new InMemoryFilmStorage(), userService);
+    private final InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
+    private final UserService userService = new UserService(inMemoryUserStorage);
+    private final InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+    private final FilmService filmService = new FilmService(inMemoryFilmStorage, userService);
 
     @Test
     void findFilmById() {
@@ -78,7 +79,6 @@ class FilmServiceTest {
     }
 
     @Test
-    @Order(1)
     void findPopularFilms() {
         userService.save(new User("email1@ya.ru", "login1", LocalDate.of(1984, 10, 10)));
         userService.save(new User("email2@ya.ru", "login2", LocalDate.of(1984, 10, 10)));

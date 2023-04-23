@@ -11,9 +11,9 @@ import java.util.*;
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>(); //Key - user ID, Value - User
-    private static Integer globalUserId = 1;
+    private Integer globalUserId = 1;
 
-    private static Integer getNextId() {
+    private Integer getNextId() {
         return globalUserId++;
     }
 

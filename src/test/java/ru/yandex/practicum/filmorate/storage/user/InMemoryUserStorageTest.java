@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -13,12 +10,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class InMemoryUserStorageTest {
-    private InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
+    private final InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
 
     @Test
-    @Order(1)
     void save() {
         User user = new User("email@ya.ru", "login", LocalDate.of(1984, 10, 10));
 
@@ -32,7 +27,6 @@ class InMemoryUserStorageTest {
     }
 
     @Test
-    @Order(2)
     void update() {
         User user = new User("email@ya.ru", "login", LocalDate.of(1984, 10, 10));
         Integer userId = inMemoryUserStorage.save(user).getId();
@@ -47,7 +41,6 @@ class InMemoryUserStorageTest {
     }
 
     @Test
-    @Order(3)
     void findUserById() {
         User user = new User("email@ya.ru", "login", LocalDate.of(1984, 10, 10));
         Integer userId = inMemoryUserStorage.save(user).getId();
@@ -57,7 +50,6 @@ class InMemoryUserStorageTest {
     }
 
     @Test
-    @Order(4)
     void findAll() {
         List<User> users = new ArrayList<>(List.of(
                 new User("email1@ya.ru", "login1", LocalDate.of(1984, 10, 10)),

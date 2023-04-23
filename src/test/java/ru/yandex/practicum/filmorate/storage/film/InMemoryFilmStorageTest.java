@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -13,12 +10,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class InMemoryFilmStorageTest {
-    private InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+    private final InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
 
     @Test
-    @Order(1)
     void save() {
         Film film = new Film("newFilm", "newDesc", LocalDate.of(2023, 4, 22), 180);
 
@@ -27,7 +22,6 @@ class InMemoryFilmStorageTest {
     }
 
     @Test
-    @Order(2)
     void update() {
         Film film = new Film("newFilm", "newDesc", LocalDate.of(2023, 4, 22), 180);
         Integer filmId = inMemoryFilmStorage.save(film).getId();
@@ -42,7 +36,6 @@ class InMemoryFilmStorageTest {
     }
 
     @Test
-    @Order(3)
     void findFilmById() {
         Film film = new Film("newFilm", "newDesc", LocalDate.of(2023, 4, 22), 180);
         Integer filmId = inMemoryFilmStorage.save(film).getId();
@@ -52,7 +45,6 @@ class InMemoryFilmStorageTest {
     }
 
     @Test
-    @Order(4)
     void findAll() {
         List<Film> films = new ArrayList<>(List.of(
                 new Film("film1", "desc1", LocalDate.of(2023, 4, 22), 180),
