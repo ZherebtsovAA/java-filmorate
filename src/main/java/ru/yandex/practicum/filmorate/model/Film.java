@@ -7,6 +7,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
@@ -20,4 +22,9 @@ public class Film {
     private final LocalDate releaseDate;
     @PositiveOrZero
     private final int duration;
+    private Set<Integer> rating = new HashSet<>();
+
+    public void setRating(Integer id) {
+        rating.add(id);
+    }
 }
