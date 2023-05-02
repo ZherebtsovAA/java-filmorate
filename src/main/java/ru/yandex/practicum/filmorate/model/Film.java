@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validators.ValidReleaseDate;
 
@@ -7,10 +8,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
 public class Film {
     private Integer id;
     @NotBlank
@@ -22,9 +23,7 @@ public class Film {
     private final LocalDate releaseDate;
     @PositiveOrZero
     private final int duration;
-    private Set<Integer> rating = new HashSet<>();
-
-    public void setRating(Integer id) {
-        rating.add(id);
-    }
+    private Integer rate;
+    private Mpa mpa;
+    private Set<Genre> genres;
 }

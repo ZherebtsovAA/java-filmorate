@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,12 +14,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
 
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService) {
+        this.filmStorage = filmStorage;
+        this.userService = userService;
+    }
+
     public Film save(Film film) {
+        if (film.getRate() == null) {
+            film.setRate(0);
+        }
         return filmStorage.save(film);
     }
 
@@ -33,21 +41,21 @@ public class FilmService {
     public Film findFilmById(Integer filmId) throws NotFoundException {
         Optional<Film> result = filmStorage.findFilmById(filmId);
         if (result.isEmpty()) {
-            throw new NotFoundException("фильма с ID: " + filmId + " нет в списке фильмов");
+            throw new NotFoundException("фильма с id{" + filmId + "} нет в списке фильмов");
         }
         return result.get();
     }
 
     public void addLike(Integer filmId, Integer userId) {
         Film film = findFilmById(filmId);
-        userService.findUserById(userId);
-        film.getRating().add(userId);
+        User user = userService.findUserById(userId);
+        filmStorage.addLike(film, user);
     }
 
     public void deleteLike(Integer filmId, Integer userId) {
         Film film = findFilmById(filmId);
-        userService.findUserById(userId);
-        film.getRating().remove(userId);
+        User user = userService.findUserById(userId);
+        filmStorage.deleteLike(film, user);
     }
 
     public List<Film> findPopularFilms(Integer count) {
@@ -55,8 +63,9 @@ public class FilmService {
             return Collections.emptyList();
         }
         return filmStorage.findAll().stream()
-                .sorted(Comparator.comparingInt(film -> (-1) * film.getRating().size()))
+                .sorted(Comparator.comparingInt(film -> (-1) * film.getRate()))
                 .limit(count)
                 .collect(Collectors.toList());
     }
+
 }
