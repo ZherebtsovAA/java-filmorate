@@ -24,7 +24,7 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaDb mpaDb;
     private final FilmGenreDb filmGenreDb;
 
-    public boolean isNotExists(int filmId) {
+    private boolean isNotExists(int filmId) {
         String sqlQuery = "SELECT count(*) FROM film WHERE film_id = ?";
         //noinspection ConstantConditions: return value is always an int, so NPE is impossible here
         int result = jdbcTemplate.queryForObject(sqlQuery, Integer.class, filmId);
