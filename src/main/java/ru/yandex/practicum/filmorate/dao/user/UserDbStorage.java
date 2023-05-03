@@ -19,7 +19,7 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final CustomerFriendDb customerFriendDb;
 
-    public boolean isNotExists(int userId) {
+    private boolean isNotExists(int userId) {
         String sqlQuery = "SELECT count(*) FROM customer WHERE customer_id = ?";
         //noinspection ConstantConditions: return value is always an int, so NPE is impossible here
         int result = jdbcTemplate.queryForObject(sqlQuery, Integer.class, userId);
@@ -46,7 +46,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User update(User user) {
+    public User update(User user) throws NotFoundException {
         Integer userId = user.getId();
         if (userId == null || userId < 1 || isNotExists(userId)) {
             throw new NotFoundException("пользователь с id{" + userId + "} не обновлен, нет в списке пользователей");

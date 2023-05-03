@@ -32,37 +32,16 @@ public class CustomerFriendDb {
                 "SELECT count(*) FROM customer_friend WHERE user_id = ? AND friend_id = ? AND status = ?",
                 Integer.class, userId, friendId, true);
 
-        //noinspection ConstantConditions: return value is always an int, so NPE is impossible here
-        result = result + jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM customer_friend WHERE user_id = ? AND friend_id = ? AND status = ?",
-                Integer.class,friendId, userId, false);
-
         if (result == 0) { //пришел первичный запрос на добавление в друзья
             jdbcTemplate.update(
                     "INSERT INTO customer_friend (user_id, friend_id, status) values (?, ?, ?)",
                     userId, friendId, true); //подтвержденную связь
-
-            jdbcTemplate.update(
-                    "INSERT INTO customer_friend (user_id, friend_id, status) values (?, ?, ?)",
-                    friendId, userId, false); //неподтвержденную связь
-            return;
-        }
-
-        //noinspection ConstantConditions: return value is always an int, so NPE is impossible here
-        result = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM customer_friend WHERE user_id = ? AND friend_id = ? AND status = ?",
-                Integer.class,friendId, userId, false);
-
-        if (result == 1) { //пришел запрос на подтверждение связи
-            jdbcTemplate.update(
-                    "UPDATE customer_friend SET status = ? WHERE user_id = ? AND friend_id = ? AND status = ?",
-                    true, friendId, userId, false);
         }
     }
 
     public void deleteToFriends(User user, User friend) {
-        String sqlQuery = "UPDATE customer_friend SET status = ? WHERE user_id = ? AND friend_id = ? AND status = ?";
-        jdbcTemplate.update(sqlQuery, false, user.getId(), friend.getId(), true);
+        String sqlQuery = "DELETE FROM customer_friend WHERE user_id = ? AND friend_id = ? AND status = ?";
+        jdbcTemplate.update(sqlQuery,user.getId(), friend.getId(), true);
     }
 
 }
