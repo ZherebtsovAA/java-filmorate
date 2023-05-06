@@ -42,8 +42,8 @@ public class MpaDb {
                 "SELECT * FROM mpa_rating WHERE mpa_id IN (:ids) ORDER BY mpa_id",
                 parameters, mpaRowMapper);
 
-        return mpaList.stream().
-                collect(Collectors.toMap(Mpa::getId, Function.identity()));
+        return mpaList.stream()
+                .collect(Collectors.toMap(Mpa::getId, Function.identity()));
     }
 
     private final RowMapper<Mpa> mpaRowMapper = (resultSet, rowNum) -> Mpa.builder()
