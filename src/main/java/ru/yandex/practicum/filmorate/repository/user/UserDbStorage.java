@@ -1,15 +1,17 @@
-package ru.yandex.practicum.filmorate.dao.user;
+package ru.yandex.practicum.filmorate.repository.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.CustomerFriendDb;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.CustomerFriendDb;
 
 import java.util.*;
 
@@ -18,14 +20,6 @@ import java.util.*;
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final CustomerFriendDb customerFriendDb;
-
-    private boolean isNotExists(int userId) {
-        String sqlQuery = "SELECT count(*) FROM customer WHERE customer_id = ?";
-        //noinspection ConstantConditions: return value is always an int, so NPE is impossible here
-        int result = jdbcTemplate.queryForObject(sqlQuery, Integer.class, userId);
-
-        return result != 1;
-    }
 
     @Override
     public User save(User user) {
@@ -48,55 +42,49 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User update(User user) throws NotFoundException {
         Integer userId = user.getId();
-        if (userId == null || userId < 1 || isNotExists(userId)) {
+        if (userId == null || userId < 1) {
             throw new NotFoundException("пользователь с id{" + userId + "} не обновлен, нет в списке пользователей");
         }
 
         String sqlQuery = "UPDATE customer SET " +
                 "login = ?, name = ?, email = ?, birthday = ? WHERE customer_id = ?";
 
-        jdbcTemplate.update(sqlQuery,
+        int result = jdbcTemplate.update(sqlQuery,
                 user.getLogin(),
                 user.getName(),
                 user.getEmail(),
                 user.getBirthday(),
                 userId);
 
+        if (result == 0) {
+            throw new NotFoundException("пользователь с id{" + userId + "} не обновлен, нет в списке пользователей");
+        }
+
         return user;
     }
 
     @Override
     public Optional<User> findUserById(Integer userId) {
-        if (userId == null || userId < 1 || isNotExists(userId)) {
+        if (userId == null || userId < 1) {
             return Optional.empty();
         }
 
-        User user = jdbcTemplate.queryForObject(
-                "SELECT customer_id, login, name, email, birthday FROM customer WHERE customer_id = ?",
-                (resultSet, rowNum) -> User.builder()
-                        .id(resultSet.getInt("CUSTOMER_ID"))
-                        .login(resultSet.getString("LOGIN"))
-                        .name(resultSet.getString("NAME"))
-                        .email(resultSet.getString("EMAIL"))
-                        .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
-                        .build(), userId);
+        try {
+            User user = jdbcTemplate.queryForObject(
+                    "SELECT customer_id, login, name, email, birthday FROM customer WHERE customer_id = ?",
+                    userRowMapper, userId);
 
-        //noinspection ConstantConditions: наличие user проверено методом isNotExists(userId)
-        return Optional.of(user);
+            //noinspection ConstantConditions
+            return Optional.of(user);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<User> findAll() {
         return jdbcTemplate.query("SELECT * FROM customer ORDER BY customer_id", userRowMapper);
     }
-
-    private final RowMapper<User> userRowMapper = (resultSet, rowNum) -> User.builder()
-            .id(resultSet.getInt("CUSTOMER_ID"))
-            .login(resultSet.getString("LOGIN"))
-            .name(resultSet.getString("NAME"))
-            .email(resultSet.getString("EMAIL"))
-            .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
-            .build();
 
     @Override
     public void addToFriends(User user, User friend) {
@@ -110,13 +98,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findUserFriends(Integer userId) {
-        Set<Integer> friendsId = customerFriendDb.findFriendsId(userId);
-        List<User> friends = new ArrayList<>();
-        for (Integer id : friendsId) {
-            findUserById(id).ifPresent(friends::add);
-        }
-
-        return friends;
+        return customerFriendDb.findFriends(userId);
     }
 
     @Override
@@ -127,20 +109,29 @@ public class UserDbStorage implements UserStorage {
         }
 
         Set<Integer> commonFriendsId = new HashSet<>(userFriendsId);
-
         Set<Integer> otherFriendsId = customerFriendDb.findFriendsId(otherId);
         if (otherFriendsId == null || otherFriendsId.size() == 0) {
             return Collections.emptyList();
         }
-
         commonFriendsId.retainAll(otherFriendsId);
 
-        List<User> commonFriends = new ArrayList<>(commonFriendsId.size());
-        for (Integer id : commonFriendsId) {
-            findUserById(id).ifPresent(commonFriends::add);
-        }
-
-        return commonFriends;
+        return getUserListById(commonFriendsId);
     }
+
+    public List<User> getUserListById(Set<Integer> userIds) {
+        NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        SqlParameterSource parameters = new MapSqlParameterSource("ids", userIds);
+        return namedJdbcTemplate.query(
+                "SELECT * FROM customer WHERE customer_id IN (:ids)",
+                parameters, userRowMapper);
+    }
+
+    private final RowMapper<User> userRowMapper = (resultSet, rowNum) -> User.builder()
+            .id(resultSet.getInt("CUSTOMER_ID"))
+            .login(resultSet.getString("LOGIN"))
+            .name(resultSet.getString("NAME"))
+            .email(resultSet.getString("EMAIL"))
+            .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
+            .build();
 
 }

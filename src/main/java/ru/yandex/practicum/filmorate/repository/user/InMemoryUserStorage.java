@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.user;
+package ru.yandex.practicum.filmorate.repository.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

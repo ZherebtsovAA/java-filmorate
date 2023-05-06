@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.user;
+package ru.yandex.practicum.filmorate.repository.user;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.MethodOrderer;
